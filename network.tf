@@ -258,31 +258,8 @@ resource "oci_core_security_list" "private_security_list" {
     }
 }
 
-resource "oci_core_subnet" "public_subnet" {
-    cidr_block                 = "${var.network_cidr}.0.0/24"
-    display_name               = "SUBNET_PUBLIC_${var.network_name}"
-    dns_label                  = "pub"
-    prohibit_public_ip_on_vnic = "false"
-    security_list_ids          = [oci_core_security_list.public_security_list.id]
-    compartment_id             = var.compartment_ocid
-    vcn_id                     = oci_core_vcn.vcn.id
-    route_table_id             = oci_core_vcn.vcn.default_route_table_id
-}
-
-
-resource "oci_core_subnet" "private_subnet" {
-    cidr_block                 = "${var.network_cidr}.1.0/24"
-    display_name               = "SUBNET_PRIVATE_${var.network_name}"
-    dns_label                  = "prv"
-    prohibit_public_ip_on_vnic = "true"
-    security_list_ids          = [oci_core_security_list.private_security_list.id]
-    compartment_id             = var.compartment_ocid
-    vcn_id                     = oci_core_vcn.vcn.id
-    route_table_id             = oci_core_route_table.route_table_private.id
-}
-
 resource "oci_core_subnet" "api_subnet" {
-    cidr_block                 = "${var.network_cidr}.2.0/28"
+    cidr_block                 = "${var.network_cidr}.0.0/28"
     display_name               = "SUBNET_API_${var.network_name}"
     dns_label                  = "api"
     prohibit_public_ip_on_vnic = "false"
@@ -292,19 +269,19 @@ resource "oci_core_subnet" "api_subnet" {
     route_table_id             = oci_core_vcn.vcn.default_route_table_id
 }
 
-resource "oci_core_subnet" "node_subnet" {
-    cidr_block                 = "${var.network_cidr}.3.0/24"
-    display_name               = "SUBNET_NODE_${var.network_name}"
-    dns_label                  = "node"
-    prohibit_public_ip_on_vnic = "true"
-    security_list_ids          = [oci_core_security_list.node_security_list.id]
+resource "oci_core_subnet" "public_subnet" {
+    cidr_block                 = "${var.network_cidr}.1.0/24"
+    display_name               = "SUBNET_PUBLIC_${var.network_name}"
+    dns_label                  = "pub"
+    prohibit_public_ip_on_vnic = "false"
+    security_list_ids          = [oci_core_security_list.public_security_list.id]
     compartment_id             = var.compartment_ocid
     vcn_id                     = oci_core_vcn.vcn.id
-    route_table_id             = oci_core_route_table.route_table_private.id
+    route_table_id             = oci_core_vcn.vcn.default_route_table_id
 }
 
 resource "oci_core_subnet" "svc_subnet" {
-    cidr_block                 = "${var.network_cidr}.4.0/24"
+    cidr_block                 = "${var.network_cidr}.2.0/24"
     display_name               = "SUBNET_SVC_${var.network_name}"
     dns_label                  = "svc"
     prohibit_public_ip_on_vnic = "false"
@@ -312,4 +289,26 @@ resource "oci_core_subnet" "svc_subnet" {
     compartment_id             = var.compartment_ocid
     vcn_id                     = oci_core_vcn.vcn.id
     route_table_id             = oci_core_vcn.vcn.default_route_table_id
+}
+
+resource "oci_core_subnet" "private_subnet" {
+    cidr_block                 = "${var.network_cidr}.4.0/22"
+    display_name               = "SUBNET_PRIVATE_${var.network_name}"
+    dns_label                  = "prv"
+    prohibit_public_ip_on_vnic = "true"
+    security_list_ids          = [oci_core_security_list.private_security_list.id]
+    compartment_id             = var.compartment_ocid
+    vcn_id                     = oci_core_vcn.vcn.id
+    route_table_id             = oci_core_route_table.route_table_private.id
+}
+
+resource "oci_core_subnet" "node_subnet" {
+    cidr_block                 = "${var.network_cidr}.8.0/22"
+    display_name               = "SUBNET_NODE_${var.network_name}"
+    dns_label                  = "node"
+    prohibit_public_ip_on_vnic = "true"
+    security_list_ids          = [oci_core_security_list.node_security_list.id]
+    compartment_id             = var.compartment_ocid
+    vcn_id                     = oci_core_vcn.vcn.id
+    route_table_id             = oci_core_route_table.route_table_private.id
 }
